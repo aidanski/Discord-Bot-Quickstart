@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { readFileSync, writeFileSync } from 'jsonfile';
 
-export const directory = path.resolve(__dirname, '../..');
+export const directory = path.resolve(path.dirname(require.main.filename));
 
 export const projectDir = (...args: string[]) => {
     return path.resolve(directory, ...args);
