@@ -1,6 +1,10 @@
 
 export class CommandMap<T> extends Map<string, Array<T>> {
 
+    constructor(...args: any[]) {
+        super(...args);
+    }
+
     on(cmd: string, handler: T): this {
         if(!this.has(cmd))
             this.set(cmd, [handler]);
