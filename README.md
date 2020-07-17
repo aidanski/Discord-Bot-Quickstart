@@ -1,1 +1,1 @@
-# News Bot
+# Discord Bot Quickstart
