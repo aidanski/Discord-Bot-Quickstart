@@ -5,7 +5,7 @@ import { Interface } from 'readline';
 import { Logger } from 'winston';
 import { IBotConfig, IBotPlugin } from '../models';
 import { ConsoleReader } from '../console-reader';
-import { CommandMap, readDir, requireFile } from '../helpers';
+import { CommandMap, readDir, requireFile, projectDir } from '../helpers';
 import { clone, fuse } from '../iteration';
 import { generateLogger } from '../logger';
 
@@ -22,7 +22,7 @@ export abstract class IBot<T extends IBotConfig> {
 
     constructor(config: T, defaults: T) {
         this.config = fuse(clone(defaults), config);
-        this.logger = generateLogger(this.config.directory.logs);
+        this.logger = generateLogger(projectDir(this.config.directory.logs));
         this.commands = new CommandMap();
         this.console = new ConsoleReader(this.logger);
         this.console.commands

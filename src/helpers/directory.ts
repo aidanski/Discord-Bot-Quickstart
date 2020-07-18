@@ -6,7 +6,10 @@ import { readFileSync, writeFileSync } from 'jsonfile';
 export const directory = path.resolve(path.dirname(require.main.filename));
 
 export const projectDir = (...args: string[]) => {
-    return path.resolve(directory, ...args);
+    if (args.some(x => x.startsWith('./') || x.startsWith('../'))) {
+        return path.resolve(directory, ...args);
+    }
+    return path.resolve(...args);
 };
 
 export const readJson = (...args: string[]) => {
