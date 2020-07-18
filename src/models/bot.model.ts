@@ -65,8 +65,13 @@ export abstract class IBot<T extends IBotConfig> {
                 .filter(file => !file.endsWith('.map'))
                 .map(file => requireFile(this.config.directory.plugins, file).default)
                 .map(construct => new construct());
-            this.plugins.forEach(plugin => plugin.preInitialize(this));
-            this.plugins.forEach(plugin => plugin.postInitialize(this));
+            this.plugins.forEach(plugin => {
+                plugin.preInitialize(this);
+                plugin.clientBound(this.client);
+                plugin.registerConsoleCommands(this.console.commands);
+                plugin.registerDiscordCommands(this.commands);
+                plugin.postInitialize(this);
+            });
         }
     }
 
