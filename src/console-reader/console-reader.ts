@@ -1,16 +1,18 @@
 
 import { CommandMap } from '../helpers';
-import { Log } from '../logger';
 
+import { Logger } from 'winston';
 import * as readline from 'readline';
 import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
 import { Interface } from 'readline';
 
 export class ConsoleReader {
+    logger: Logger;
     commands: CommandMap<(args: ParsedArgs, rl: Interface) => void>;
 
-    constructor() {
+    constructor(logger: Logger) {
+        this.logger = logger;
         this.commands = new CommandMap();
     }
     
@@ -29,7 +31,7 @@ export class ConsoleReader {
             }
         });
         rl.on('close', () => {
-            Log.debug('Console Reader Disconnected');
+            this.logger.debug('Console Reader Disconnected');
         });
     }
 

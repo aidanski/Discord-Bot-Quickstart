@@ -2,26 +2,29 @@ import { parse, SuccessfulParsedMessage } from 'discord-command-parser';
 import { Client, Message } from 'discord.js';
 import { ParsedArgs } from 'minimist';
 import { Interface } from 'readline';
+import { Logger } from 'winston';
 import { IBotConfig, IBotPlugin } from '../models';
 import { ConsoleReader } from '../console-reader';
 import { CommandMap, readDir, requireFile } from '../helpers';
 import { clone, fuse } from '../iteration';
-import { Log } from '../logger';
+import { generateLogger } from '../logger';
 
-process.on('unhandledRejection', error => Log.error('Uncaught Promise Rejection', error));
+process.on('unhandledRejection', error => this.log.error('Uncaught Promise Rejection', error));
 
 export abstract class IBot<T extends IBotConfig> {
-    config: T;
     online: boolean;
-    private client: Client;
-    private commands: CommandMap<(cmd: SuccessfulParsedMessage<Message>, msg: Message) => void>;
-    private console: ConsoleReader;
-    private plugins: IBotPlugin[];
+    readonly config: T;
+    readonly logger: Logger;
+    readonly client: Client;
+    readonly commands: CommandMap<(cmd: SuccessfulParsedMessage<Message>, msg: Message) => void>;
+    readonly console: ConsoleReader;
+    readonly plugins: IBotPlugin[];
 
     constructor(config: T, defaults: T) {
         this.config = fuse(clone(defaults), config);
+        this.logger = generateLogger(this.config.directory.logs);
         this.commands = new CommandMap();
-        this.console = new ConsoleReader();
+        this.console = new ConsoleReader(this.logger);
         this.console.commands
             .on('exit', (args: ParsedArgs, rl: Interface) => {
                 if(this.client)
@@ -30,16 +33,16 @@ export abstract class IBot<T extends IBotConfig> {
             });
         this.client = new Client()
             .on('ready', () => {
-                Log.debug('Bot Online');
+                this.logger.debug('Bot Online');
                 this.online = true;
                 this.onReady(this.client);
             })
             .on('disconnect', () => {
                 this.online = false;
-                Log.debug('Bot Disconnected');
+                this.logger.debug('Bot Disconnected');
             })
             .on('error', (error: Error) => {
-                Log.error(error);
+                this.logger.error(error);
                 console.log(error);
             })
             .on('message', (msg: Message) => {
@@ -47,7 +50,7 @@ export abstract class IBot<T extends IBotConfig> {
                 if(!parsed.success) return;
                 let handlers = this.commands.get(parsed.command);
                 if(handlers) {
-                    Log.debug(`Bot Command: ${msg.content}`);
+                    this.logger.debug(`Bot Command: ${msg.content}`);
                     handlers.forEach(handle => {
                         handle(parsed as SuccessfulParsedMessage<Message>, msg);
                     });

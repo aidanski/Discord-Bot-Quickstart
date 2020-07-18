@@ -7,7 +7,8 @@ export interface IBotConfig {
         token: string;
         log?: boolean;
     },
-    directory?: {
+    directory: {
         plugins?: string;
+        logs: string;
     }
 }
