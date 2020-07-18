@@ -7,10 +7,10 @@ import { SuccessfulParsedMessage } from 'discord-command-parser';
 import { Message, Client } from 'discord.js';
 
 export abstract class IBotPlugin {
-    abstract preInitialize<T extends IBotConfig>(bot: IBot<T>): void;
-    abstract postInitialize<T extends IBotConfig>(bot: IBot<T>): void;
-    abstract registerConsoleCommands(map: CommandMap<(args: ParsedArgs, rl: Interface) => void>): void;
-    abstract registerDiscordCommands(map: CommandMap<(cmd: SuccessfulParsedMessage<Message>, msg: Message) => void>): void;
-    abstract clientBound(client: Client): void;
-    abstract onReady(client: Client): void;
+    preInitialize<T extends IBotConfig>(bot: IBot<T>) { }
+    postInitialize<T extends IBotConfig>(bot: IBot<T>) { }
+    registerConsoleCommands(map: CommandMap<(args: ParsedArgs, rl: Interface) => void>) { }
+    registerDiscordCommands(map: CommandMap<(cmd: SuccessfulParsedMessage<Message>, msg: Message) => void>) { }
+    clientBound(client: Client) { }
+    onReady(client: Client) { }
 }
