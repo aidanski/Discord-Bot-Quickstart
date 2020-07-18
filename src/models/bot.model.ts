@@ -12,13 +12,11 @@ process.on('unhandledRejection', error => Log.error('Uncaught Promise Rejection'
 
 export abstract class IBot<T extends IBotConfig> {
     config: T;
+    online: boolean;
     private client: Client;
     private commands: CommandMap<(cmd: SuccessfulParsedMessage<Message>, msg: Message) => void>;
     private console: ConsoleReader;
-    private _online: boolean;
     private plugins: IBotPlugin[];
-
-    get isOnline() { return this._online; }
 
     constructor(config: T, defaults: T) {
         this.config = fuse(clone(defaults), config);
@@ -33,11 +31,11 @@ export abstract class IBot<T extends IBotConfig> {
         this.client = new Client()
             .on('ready', () => {
                 Log.debug('Bot Online');
-                this._online = true;
+                this.online = true;
                 this.onReady(this.client);
             })
             .on('disconnect', () => {
-                this._online = false;
+                this.online = false;
                 Log.debug('Bot Disconnected');
             })
             .on('error', (error: Error) => {
