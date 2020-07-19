@@ -8,3 +8,4 @@ export * from 'discord.js';
 export { SuccessfulParsedMessage, ParsedMessage } from 'discord-command-parser';
 export { ParsedArgs } from 'minimist';
 export { Interface } from 'readline';
+export { Logger } from 'winston';
