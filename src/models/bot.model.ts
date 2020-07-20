@@ -46,8 +46,10 @@ export abstract class IBot<T extends IBotConfig> {
                 console.log(error);
             })
             .on('message', (msg: Message) => {
+                this.preMessage(msg);
                 let parsed = parse(msg, this.config.command.symbol);
                 if(!parsed.success) return;
+                this.parsedMessage(parsed);
                 let handlers = this.commands.get(parsed.command);
                 if(handlers) {
                     this.logger.debug(`Bot Command: ${msg.content}`);
@@ -55,6 +57,7 @@ export abstract class IBot<T extends IBotConfig> {
                         handle(parsed as SuccessfulParsedMessage<Message>, msg);
                     });
                 }
+                this.postMessage(msg);
             });
         this.onClientCreated(this.client);
         this.onRegisterConsoleCommands(this.console.commands);
@@ -83,6 +86,12 @@ export abstract class IBot<T extends IBotConfig> {
     abstract onClientCreated(client: Client): void;
 
     abstract onReady(client: Client): void;
+
+    preMessage(msg: Message) { }
+
+    parsedMessage(msg: SuccessfulParsedMessage<Message>) { }
+
+    postMessage(msg: Message) { }
 
     connect() {
         return this.client.login(this.config.discord.token);
