@@ -5,6 +5,10 @@ import { readFileSync, writeFileSync } from 'jsonfile';
 
 export const directory = path.resolve(path.dirname(require.main.filename));
 
+export const ensureDirectory = async (dirPath: string) => {
+    await fs.promises.mkdir(dirPath, { recursive: true });
+};
+
 export const projectDir = (...args: string[]) => {
     if (args.some(x => x.startsWith('./') || x.startsWith('../'))) {
         return path.resolve(directory, ...args);
@@ -31,16 +35,22 @@ export const readDir = (...args: string[]) => {
     return fs.readdirSync(projectDir(...args)); 
 };
 
-export const writeFile = (data: any, ...args: string[]) => {
-    return fs.writeFileSync(projectDir(...args), data, { encoding: 'utf8' }); 
+export const writeFile = async (data: any, ...args: string[]) => {
+    const target = projectDir(...args);
+    await ensureDirectory(path.dirname(target));
+    return fs.writeFileSync(target, data, { encoding: 'utf8' }); 
 };
 
-export const writeJson = (data: any, ...args: string[]) => {
-    return writeFileSync(projectDir(...args), data, { encoding: 'utf8' });
+export const writeJson = async (data: any, ...args: string[]) => {
+    const target = projectDir(...args);
+    await ensureDirectory(path.dirname(target));
+    return writeFileSync(target, data, { encoding: 'utf8' });
 };
 
-export const appendFile = (data: any, ...args: string[]) => {
-    return fs.appendFileSync(projectDir(...args), data, { encoding: 'utf8' });
+export const appendFile = async (data: any, ...args: string[]) => {
+    const target = projectDir(...args);
+    await ensureDirectory(path.dirname(target));
+    return fs.appendFileSync(target, data, { encoding: 'utf8' });
 };
 
 export const fileExists = (...args: string[]) => {
