@@ -36,6 +36,9 @@ export abstract class IBot<T extends IBotConfig> {
                 this.logger.debug('Bot Online');
                 this.online = true;
                 this.onReady(this.client);
+                if (!!this.plugins) {
+                    this.plugins.forEach(plugin => plugin.onReady(this.client));
+                }
             })
             .on('disconnect', () => {
                 this.online = false;
