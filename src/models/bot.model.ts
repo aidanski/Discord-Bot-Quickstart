@@ -51,11 +51,13 @@ export abstract class IBot<T extends IBotConfig> {
             .on('message', (msg: Message) => {
                 this.preMessage(msg);
                 let parsed = parse(msg, this.config.command.symbol, {allowBots: true});
+                if(!parsed.success) return;
                 this.parsedMessage(parsed);
                 let handlers = this.commands.get(parsed.command);
                 if(handlers) {
                     this.logger.debug(`Bot Command: ${msg.content}`);
                     handlers.forEach(handle => {
+                        this.logger.debug(`passed message');
                         handle(parsed as SuccessfulParsedMessage<Message>, msg);
                     });
                 }
